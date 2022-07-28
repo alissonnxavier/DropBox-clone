@@ -1,6 +1,5 @@
 
 
-
 class DropBoxController{
    
 
@@ -12,12 +11,40 @@ class DropBoxController{
         this.progressBarEl = this.snackModalEl.querySelector('.mc-progress-bar-fg');
         this.nameFileEl = this.snackModalEl.querySelector('.filename');
         this.timeLeftEl = this.snackModalEl.querySelector('.timeleft');
-              
+         
+        this.connectFirebase();
         this.initEvents();
                              
     }
+
+    connectFirebase(){
+
+      var config = {
+
+        apiKey: "AIzaSyAvSwnRCdQEnZRGTogdFTCNgDgMLMAh3-I",
+      
+        authDomain: "clone-24f1e.firebaseapp.com",
+      
+        databaseURL: "https://clone-24f1e-default-rtdb.firebaseio.com",
+      
+        projectId: "clone-24f1e",
+      
+        storageBucket: "clone-24f1e.appspot.com",
+      
+        messagingSenderId: "27245114588",
+      
+        appId: "1:27245114588:web:397628d2ebd50665b03019"
+      
+      };
+            
+      // Initialize Firebase
+      
+      firebase.initializeApp(config);
+    }
             
     initEvents(){
+
+      
 
         this.btnSendFileEl.addEventListener('click', ()=>{
 
@@ -29,22 +56,34 @@ class DropBoxController{
             this.uploadTask(event.target.files).then(responses =>{
 
                 responses.forEach(resp =>{
+                
+                  this.getFireBaseRef().push().set(resp.files['input-file']);
 
-                  console.log(resp.files['input-file']);
+                });
 
+                this.uploadComplete();
 
-                })
-            });
+            }).catch(err =>{
+
+              this.uploadComplete();
+              console.error(err);
+            })
             
             this.modalShow();
-
-            this.inputFilesEl.value = '';
+          
         });
+    }
+
+    uploadComplete(){
+
+      this.modalShow(false);
+      this.inputFilesEl.value = '';
+      this.btnSendFileEl.disabled = false;
     }
 
     getFireBaseRef(){
 
-      return FirebaseEr
+      return firebase.database().ref('files');
 
     }
 
